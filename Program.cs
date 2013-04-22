@@ -114,8 +114,11 @@ namespace dbdump {
 			string type = row["typename"].ToString().ToLower();
 			if(type == "bigint")
 				return "bigint";
-			if(type == "binary")
-				return String.Format("binary({0})", row["length"]);
+            if (type == "binary")
+                if (Convert.ToInt32(row["length"]) > 255)
+                    return "blob";
+                else
+			    	return String.Format("binary({0})", row["length"]);
 			if(type == "bit")
 				return "tinyint";
 			if(type == "char")
@@ -126,6 +129,8 @@ namespace dbdump {
 				return "double";
 			if(type == "float")
 				return "float";
+            if (type == "image")
+                return "mediumtext";
 			if(type == "int")
 				return "int";
 			if(type == "nchar")
