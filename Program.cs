@@ -53,7 +53,7 @@ namespace dbdump {
 		}
 
 		static void ExportTables(string dbName) {
-			string commandFormat = "{0}.{1}.{2} out "+Destination+"\\{2}.txt -c -C RAW -T -t\"|||COL|||\" -r\"|||ROW|||\" -S{3}";
+			string commandFormat = "[{0}].[{1}].[{2}] out "+Destination+"\\{2}.txt -c -C RAW -T -t\"|||COL|||\" -r\"|||ROW|||\" -S{3}";
 
 			String sql = String.Format(@"select * from INFORMATION_SCHEMA.TABLES
 				where TABLE_TYPE = 'BASE TABLE'
@@ -65,6 +65,7 @@ namespace dbdump {
 				string schema = row["TABLE_SCHEMA"].ToString();
 
 				string command = String.Format(commandFormat, dbName, schema, tableName, Connection.DataSource);
+                Console.WriteLine("bcp " + command);
 				
 				Process.Start("bcp.exe", command);
 			}
@@ -111,6 +112,10 @@ namespace dbdump {
 		}
 
 		static string ColumnType(DataRow row) {
+            //if (row["name"].ToString() == "Body") {
+            //    int foo = 123;
+            //}
+
 			string type = row["typename"].ToString().ToLower();
 			if(type == "bigint")
 				return "bigint";
@@ -123,7 +128,7 @@ namespace dbdump {
 				return "tinyint";
 			if(type == "char")
 				return String.Format("char({0})", row["length"]);
-			if(type == "datetime")
+			if(type == "datetime" || type == "smalldatetime")
 				return "datetime";
 			if(type == "decimal")
 				return "double";
@@ -137,6 +142,8 @@ namespace dbdump {
 				return String.Format("char({0})", row["length"]);
 			//if (type == "nvarchar")
 			//        return String.Format("varchar({0})", row["length"]);
+            if (type == "text" || type == "ntext")
+                return "text";
 			if(type == "real")
 				return "double";
 			if(type == "smallint")
@@ -161,6 +168,8 @@ namespace dbdump {
 					return "text";
 				return String.Format("varchar({0})", row["length"]);
 			}
+
+            Console.WriteLine("Unrecognized type {0}.", type);
 
 			return "varchar(255)";
 		}
