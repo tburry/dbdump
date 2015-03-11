@@ -18,17 +18,19 @@ namespace dbdump {
             if (args == null || args.Length < 2) {
                 Console.Write("usage: dbdump database destination destination2\n"
                     + "  database:     The name of the database to export.\n"
-                    + "  destination:  The name of the folder to export all of the files to on the sql server machine.\n"
-                    + "  destination2: The name of the folder that you'll copy the export to on the mysql machine.");
+                    + "  destination:  The name of the folder to export all of the files to on the sql server machine.");
                 return;
             }
 
             string dbname = args[0];
             Destination = args[1].Replace('\\', '/').TrimEnd('/');
-            if (args.Length > 2)
+            if (args.Length > 2) {
                 Destination2 = args[2].Replace('\\', '/').TrimEnd('/');
-            else
-                Destination2 = Destination;
+            } else {
+                string folder = dbname.Replace(" ", "");
+
+                Destination2 = "/var/baks/" + folder;
+            }
 
             SqlConnection connection = null;
 
@@ -45,15 +47,26 @@ namespace dbdump {
 
 
                 ExportTableDefs();
-                ExportTables(dbname);
+                ExportTables(dbname, cstr);
             } finally {
                 if (connection != null)
                     connection.Close();
             }
         }
 
-        static void ExportTables(string dbName) {
+        static void ExportTables(string dbName, string connectionString) {
             string commandFormat = "[{0}].[{1}].[{2}] out " + Destination + "\\{2}.txt -c -C RAW -T -t\"|||COL|||\" -r\"|||ROW|||\" -S{3}";
+            string username = "", password = "";
+
+            ParseUsernamePassword(connectionString, ref username, ref password);
+
+            if (username != "") {
+                commandFormat += " -U{4}";
+
+                if (password != "") {
+                    commandFormat += " -P{5}";
+                }
+            }
 
             String sql = String.Format(@"select * from INFORMATION_SCHEMA.TABLES
 				where TABLE_TYPE = 'BASE TABLE'
@@ -64,10 +77,37 @@ namespace dbdump {
                 string tableName = row["TABLE_NAME"].ToString();
                 string schema = row["TABLE_SCHEMA"].ToString();
 
-                string command = String.Format(commandFormat, dbName, schema, tableName, Connection.DataSource);
+                string command = String.Format(commandFormat, dbName, schema, tableName, Connection.DataSource, username, password);
                 Console.WriteLine("bcp " + command);
 
                 Process.Start("bcp.exe", command);
+            }
+        }
+
+        static void ParseUsernamePassword(string connectionString, ref string username, ref string password) {
+            string[] parts = connectionString.Split(new Char[] {';'});
+
+            username = "";
+            password = "";
+
+            foreach (string part in parts) {
+                string[] keyvalue = part.Split(new Char[] {'='}, 2);
+
+                if (keyvalue.Length < 2) {
+                    continue;
+                }
+
+                string key = keyvalue[0].Trim().ToLower();
+                string value = keyvalue[1].Trim();
+
+                switch (key) {
+                    case "user id":
+                        username = value;
+                        break;
+                    case "password":
+                        password = value;
+                        break;
+                }
             }
         }
 
