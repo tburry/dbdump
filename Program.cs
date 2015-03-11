@@ -170,7 +170,7 @@ namespace dbdump {
                 return String.Format("char({0})", row["length"]);
             if (type == "datetime" || type == "smalldatetime")
                 return "datetime";
-            if (type == "decimal")
+            if (type == "decimal" || type == "money")
                 return "double";
             if (type == "float")
                 return "float";
