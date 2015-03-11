@@ -23,7 +23,27 @@ In order to run dbdump you'll need the following:
 9. Select the database to restore to. You can type the name of a database that doesn't exist to create a new database.
 10. Click OK and the database should restore.
 
-## Running dbdump.exe
+##Running dbdump.exe
 
 1. dbdump.exe has an associated config file. Make sure you edit this file and enter your SQL Server information so that it knows which server to connect to.
 2. Once you've set up your config file you can type **dudump** to see a list of command line options.
+
+##Connection Strings
+
+Your config file requires a connection string in order to connect to your SQL server. If you program against a SQL server then this should be familar to you. If you aren't too sure you can go to [connectionstrings.com](https://www.connectionstrings.com/sql-server/) to read up on their documentation.
+
+###Connecting with Windows Authentication
+
+If you are running dbdump on the same computer as your SQL server then you will most likely be able to use windows authentication. Your connection string will look something like this:
+
+```
+Data Source=<Server Name>;Application Name=dbdump;Integrated Security=true;
+```
+
+###Connection with a Username/Password
+
+If you are running dbdump from a different computer such as your web server then you might have to use a connection string with a username/password. It will look something like this:
+
+```
+Data Source=<Server Name>;Application Name=dbdump;Initial Catalog=<Database Name>; User ID=<Username>;Password=<Password>
+```
