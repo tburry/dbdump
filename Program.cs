@@ -188,7 +188,7 @@ namespace dbdump {
 
         static string LoadDataSql(string tableName) {
             string sql = String.Format(@"load data infile '{0}/{1}.txt' into table `{1}`
-				character set utf8
+				character set latin1
 				columns terminated by '|||COL|||'
 				lines terminated by '|||ROW|||'
 				ignore 0 lines;", Destination2, tableName);
