@@ -8,7 +8,7 @@ A little command line tool that will dump a SQL Server database in a format that
 In order to run dbdump you'll need the following:
 
 1. A computer running SQL Server. You can download SQL Server 2008 Express [here](http://www.microsoft.com/en-ca/download/details.aspx?id=1695) and SQL Server 2008 Management Studio Express [here](http://www.microsoft.com/en-ca/download/details.aspx?id=7593).
-2. A computer with the .net framework 4.x. You can download it [here](http://www.microsoft.com/en-ca/download/details.aspx?id=40779).
+2. A computer with the .net framework 4.x. You can download it [here](http://www.microsoft.com/en-ca/download/details.aspx?id=40779). If you need to use a different version of the .net framework you can build the solution yourself and target your desired version.
 
 ##Restoring a SQL Server Backup
 
