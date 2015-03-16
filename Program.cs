@@ -55,7 +55,7 @@ namespace dbdump {
         }
 
         static void ExportTables(string dbName, string connectionString) {
-            string commandFormat = "[{0}].[{1}].[{2}] out " + Destination + "\\{2}.txt -c -C RAW -T -t\"|||COL|||\" -r\"|||ROW|||\" -S{3}";
+            string commandFormat = "[{0}].[{1}].[{2}] out " + Destination + "\\{2}.txt -c -C RAW -t\"|||COL|||\" -r\"|||ROW|||\" -S{3}";
             string username = "", password = "";
 
             ParseUsernamePassword(connectionString, ref username, ref password);
@@ -66,6 +66,8 @@ namespace dbdump {
                 if (password != "") {
                     commandFormat += " -P{5}";
                 }
+            } else {
+                commandFormat += " -T";
             }
 
             String sql = String.Format(@"select * from INFORMATION_SCHEMA.TABLES
