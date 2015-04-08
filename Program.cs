@@ -210,6 +210,9 @@ namespace dbdump {
                     return "text";
                 return String.Format("varchar({0})", row["length"]);
             }
+            if (type == "uniqueidentifier") {
+                return "varchar(40)";
+            }
 
             Console.WriteLine("Unrecognized type {0}.", type);
 
